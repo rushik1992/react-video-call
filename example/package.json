@@ -7,7 +7,8 @@
     "dev-ssl": "node server.js && ngrok config add-authtoken 2qzp4qdjOzc489dByJzTT8KsQ8Z_39pEc83oupFnWHb5xChtU && ngrok http --url=famous-generally-polecat.ngrok-free.app 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ngrok":".\node_modules\ngrok\bin\ngrok http --url=famous-generally-polecat.ngrok-free.app 3000"
   },
   "dependencies": {
     "firebase": "^11.1.0",

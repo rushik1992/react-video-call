@@ -1,5 +1,5 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { doc, DocumentData, DocumentReference, Firestore, setDoc } from 'firebase/firestore';
+import { doc, DocumentData, DocumentReference, Firestore, setDoc,Unsubscribe } from 'firebase/firestore';
 import { onSnapshot ,getFirestore} from 'firebase/firestore';
 import { on } from 'events';
 const firebaseConfig = require("./firebasecrads.json")
@@ -36,23 +36,39 @@ export class FirebaseWrapper{
         return this.onRoomUpdate(onUpdateCb);
     }
 
+    async leaveRoom(){
+        if(!this._roomName){
+            console.log("No Connection Exist.")
+            return;
+        }
+        this.updateRoom("leave",null);
+    }
+
     async updateRoom(action:string,data:any) {
         if(!this._roomRef){
             throw "room have not create yet."
-        }        
-        this._room[action]=data;
+        } 
+        if(action==="leave"){
+            this._room={};
+        }else{
+            this._room[action]=data;
+        }       
+        
         await setDoc(this._roomRef, {
           ...this._room
         });        
     }
 
-    onRoomUpdate(cb:Function){
+    onRoomUpdate(cb:Function):Unsubscribe{
         if(!this._roomRef || !this._roomName){
             throw "room have not create yet."
         }
         const unsub = onSnapshot(this._roomRef, (doc) => {
             const data = doc.data();
-            this._room=data;
+            this._room={
+                ...this._room,
+                ...data
+            };
             cb(data);
         });
         return unsub;
