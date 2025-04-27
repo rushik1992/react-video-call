@@ -4,26 +4,26 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev-ssl": "node server.js && ngrok config add-authtoken 2qzp4qdjOzc489dByJzTT8KsQ8Z_39pEc83oupFnWHb5xChtU && ngrok http --url=famous-generally-polecat.ngrok-free.app 3000",
+    "dev-ssl": "node server.js && npm run ngrok",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ngrok":".\node_modules\ngrok\bin\ngrok http --url=famous-generally-polecat.ngrok-free.app 3000"
+    "ngrok": ".\node_modules\ngrok\bin\ngrok http http://localhost:3000"
   },
   "dependencies": {
     "firebase": "^11.1.0",
-    "next": "15.1.3",
+    "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "ngrok": "^5.0.0-beta.2",
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.3",
-    "ngrok": "^5.0.0-beta.2",
     "postcss": "^8",
     "sass": "^1.83.0",
     "tailwindcss": "^3.4.1",

@@ -1,23 +1,23 @@
-import { FirebaseApp, initializeApp } from 'firebase/app';
+import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app';
 import { doc, DocumentData, DocumentReference, Firestore, setDoc,Unsubscribe } from 'firebase/firestore';
 import { onSnapshot ,getFirestore} from 'firebase/firestore';
-import { on } from 'events';
-const firebaseConfig = require("./firebasecrads.json")
 
+type OnUpdateCallback = (data: DocumentData | undefined) => void;
 export class FirebaseWrapper{
     _app:FirebaseApp;
     _db:Firestore;
     _roomName?:string;
     _roomRef?:DocumentReference<DocumentData, DocumentData>;
-    _room:any={};
+    _room:{[key:string]:boolean|string|object|null}={};
 
-    constructor(config:any=firebaseConfig){
+    constructor(config:FirebaseOptions){
         this._app=initializeApp(config);
         this._db=getFirestore(this._app);
     }
-    async createRoom(roomName:string,onUpdateCb:Function){
+    async createRoom(roomName:string,onUpdateCb:OnUpdateCallback){
         if(this._roomName === roomName){
-            console.log("Room alredy created.")
+            console.debug("Room alredy created.")
+            throw new Error("Room alredy created.");
             return;
         }
         this._roomName=roomName;
@@ -26,9 +26,10 @@ export class FirebaseWrapper{
 
         return this.onRoomUpdate(onUpdateCb);
     }
-    async joinRoom(roomName:string,onUpdateCb:Function){
+    async joinRoom(roomName:string,onUpdateCb:OnUpdateCallback){
         if(this._roomName === roomName){
-            console.log("You alredy joined room.")
+            console.debug("You alredy joined room.")
+            throw new Error("You alredy joined room.");
             return;
         }
         this._roomName=roomName;
@@ -38,15 +39,16 @@ export class FirebaseWrapper{
 
     async leaveRoom(){
         if(!this._roomName){
-            console.log("No Connection Exist.")
+            console.debug("No Connection Exist.")
+            throw new Error("No Connection Exist.");
             return;
         }
         this.updateRoom("leave",null);
     }
 
-    async updateRoom(action:string,data:any) {
+    async updateRoom(action:string,data:boolean|string|object|null) {
         if(!this._roomRef){
-            throw "room have not create yet."
+            throw new Error("room have not create yet.")
         } 
         if(action==="leave"){
             this._room={};
@@ -59,9 +61,9 @@ export class FirebaseWrapper{
         });        
     }
 
-    onRoomUpdate(cb:Function):Unsubscribe{
+    onRoomUpdate(cb:OnUpdateCallback):Unsubscribe{
         if(!this._roomRef || !this._roomName){
-            throw "room have not create yet."
+            throw new Error("room have not create yet.");
         }
         const unsub = onSnapshot(this._roomRef, (doc) => {
             const data = doc.data();
