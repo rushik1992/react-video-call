@@ -30,10 +30,10 @@ const configuration = {
         ],
 };
 
-type OnUpdateStateCalBack= (state: RTCPeerConnectionState,event:Event) => void;
+type OnUpdateStateCalBack = (state: RTCPeerConnectionState, event: Event) => void;
 
 
-export interface Idevice{
+export interface Idevice {
     value: string;
     label: string;
     data: MediaDeviceInfo;
@@ -49,6 +49,7 @@ export class WebRTCManager {
     localVidEle: RefObject<HTMLVideoElement>;
     remortVidEle: RefObject<HTMLVideoElement>;
     roomUnSub?: Unsubscribe;
+    roomRole?: "owner" | "joiner";
 
 
     constructor(
@@ -77,7 +78,7 @@ export class WebRTCManager {
         let offsetX: number, offsetY: number;
 
         // Handle start of dragging (both mouse and touch)
-        function startDrag(e: TouchEvent|MouseEvent) {
+        function startDrag(e: TouchEvent | MouseEvent) {
             isDragging = true;
 
             let clientX: number;
@@ -98,12 +99,12 @@ export class WebRTCManager {
         }
 
         // Handle dragging (both mouse and touch)
-        function drag(e: TouchEvent|MouseEvent) {
+        function drag(e: TouchEvent | MouseEvent) {
             if (!isDragging) return;
-            
+
             let clientX: number;
             let clientY: number;
-        
+
             if (e instanceof TouchEvent) {
                 clientX = e.touches[0].clientX;
                 clientY = e.touches[0].clientY;
@@ -148,38 +149,79 @@ export class WebRTCManager {
         document.addEventListener('touchend', endDrag);
     }
 
-    async createRoom(name: string) {
-        this.peerConnection.onicecandidate = async (event) => {
-            //Event that fires off when a new offer ICE candidate is created
-            if (event.candidate) {
-                await this.fireBaseDb.updateRoom("offer", JSON.stringify(this.peerConnection.localDescription));
-            }
-        };
-        const offer = await this.peerConnection.createOffer();
-        await this.peerConnection.setLocalDescription(offer);
-        this.roomUnSub = await this.fireBaseDb.createRoom(name, async (data: DocumentData | undefined) => {
-            if (data && data.answer && !data.completed1) {
-                this.peerConnection.setRemoteDescription(JSON.parse(data.answer));
-                await this.fireBaseDb.updateRoom("completed1", true)
-            }
-        })
+    // async createRoom(name: string) {
+    //     // this.peerConnection.onicecandidate = async (event) => {
+    //     //     //Event that fires off when a new offer ICE candidate is created
+    //     //     if (event.candidate) {
+    //     //         await this.fireBaseDb.updateRoom("offer", JSON.stringify(this.peerConnection.localDescription));
+    //     //     }
+    //     // };
+    //     // const offer = await this.peerConnection.createOffer();
+    //     // await this.peerConnection.setLocalDescription(offer);
+    //     // await this.fireBaseDb.createRoom(name
+    //     //     , async (data: DocumentData | undefined) => {
+    //     //     if (data && data.answer && !data.completed1) {
+    //     //         this.peerConnection.setRemoteDescription(JSON.parse(data.answer));
+    //     //         await this.fireBaseDb.updateRoom("completed1", true)
+    //     //     }
+    //     // }
+    // // )
 
-    }
+    // }
 
-    async joinRoom(name: string) {
+    // async joinRoom(name: string) {
+    //     this.peerConnection.onicecandidate = async (event) => {
+    //         //Event that fires off when a new answer ICE candidate is created
+    //         if (event.candidate) {
+    //             await this.fireBaseDb.updateRoom("answer", JSON.stringify(this.peerConnection.localDescription));
+    //         }
+    //     };
+    //     // this.roomUnSub = await this.fireBaseDb.joinRoom(name, async (data: DocumentData | undefined) => {
+    //     //     if (data && data.offer && !data.completed2) {
+    //     //         await this.peerConnection.setRemoteDescription(JSON.parse(data.offer));
+    //     //         const answer = await this.peerConnection.createAnswer();
+    //     //         await this.peerConnection.setLocalDescription(answer);
+    //     //         await this.fireBaseDb.updateRoom("completed2", true);
+    //     //     }
+    //     // });
+    // }
+
+    async joinOrStartRoom(name: string) {
         this.peerConnection.onicecandidate = async (event) => {
             //Event that fires off when a new answer ICE candidate is created
             if (event.candidate) {
-                await this.fireBaseDb.updateRoom("answer", JSON.stringify(this.peerConnection.localDescription));
+
+                await this.fireBaseDb.updateRoom(this.roomRole==="owner"?"offer": "answer", JSON.stringify(this.peerConnection.localDescription));
             }
         };
         this.roomUnSub = await this.fireBaseDb.joinRoom(name, async (data: DocumentData | undefined) => {
-            if (data && data.offer && !data.completed2) {
+            if (!this.roomRole && (!data || !data.offer)) {
+                console.log("OWNER CALL For Offer")
+                this.roomRole = "owner";
+                const offer = await this.peerConnection.createOffer();
+                await this.peerConnection.setLocalDescription(offer);
+                await this.fireBaseDb.createRoom(name);
+
+            } else if (!this.roomRole && (data && data.offer && !data.completed2)) {
+                console.log("Joiner CALL for initialize")
+
+                this.roomRole = "joiner";
                 await this.peerConnection.setRemoteDescription(JSON.parse(data.offer));
                 const answer = await this.peerConnection.createAnswer();
                 await this.peerConnection.setLocalDescription(answer);
                 await this.fireBaseDb.updateRoom("completed2", true);
+            } else if (this.roomRole ==="owner" && data && data.answer && !data.completed1) {
+                console.log("OWNER GOT Answer")
+                this.peerConnection.setRemoteDescription(JSON.parse(data.answer));
+                await this.fireBaseDb.updateRoom("completed1", true)
             }
+
+            // if (data && data.offer && !data.completed2) {
+            //     await this.peerConnection.setRemoteDescription(JSON.parse(data.offer));
+            //     const answer = await this.peerConnection.createAnswer();
+            //     await this.peerConnection.setLocalDescription(answer);
+            //     await this.fireBaseDb.updateRoom("completed2", true);
+            // }
         });
     }
 
@@ -205,7 +247,7 @@ export class WebRTCManager {
 
     }
 
-    async getDevices():Promise<{ audioDevices: Idevice[]; videoDevices: Idevice[]; }> {
+    async getDevices(): Promise<{ audioDevices: Idevice[]; videoDevices: Idevice[]; }> {
         if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
             console.debug("Media devices not supported in this browser.");
             return { audioDevices: [], videoDevices: [] };
@@ -231,7 +273,7 @@ export class WebRTCManager {
         }
         return { audioDevices, videoDevices }
     }
-    async selectDevice(camera: string|undefined, mic: string|undefined) {
+    async selectDevice(camera: string | undefined, mic: string | undefined) {
         if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
             console.debug("Media devices not supported in this browser.");
             return;
@@ -304,7 +346,7 @@ export class WebRTCManager {
     }
 
 
-    muteMic(isMiute:boolean) {
+    muteMic(isMiute: boolean) {
         this.localStream?.getAudioTracks().forEach(track => track.enabled = !isMiute);
         console.debug("Microphone is muted");
     }

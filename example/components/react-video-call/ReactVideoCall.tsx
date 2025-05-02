@@ -106,18 +106,18 @@ export default function ReactVideoCall({ firebaseConfig, RTCConfiguration }: Rea
                                     className="bg-white text-blue-600 font-medium mx-4 py-2 px-6 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
                                     onClick={() => {
                                         if (webrtcManager) {
-                                            webrtcManager.createRoom("Rushik1")
-                                            setconnectionStatus("waiting to join")
+                                            webrtcManager.joinOrStartRoom("Rushik1")
+                                            setconnectionStatus("waiting...")
                                         }
-                                    }}>C</button>
-                                <button type="button"
+                                    }}>Start</button>
+                                {/* <button type="button"
                                     className="bg-white text-blue-600 font-medium py-2 px-6 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
                                     onClick={() => {
                                         if (webrtcManager) {
                                             webrtcManager.joinRoom("Rushik1")
                                             setconnectionStatus("joining...")
                                         }
-                                    }}>J</button>
+                                    }}>J</button> */}
                             </>
                         )
 
