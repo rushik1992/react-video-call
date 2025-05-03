@@ -7,10 +7,11 @@ import { Idevice, WebRTCManager } from "./libs/webrtcManager";
 import { Icon } from "../icons";
 import { FirebaseOptions } from "firebase/app";
 export interface ReactVideoCallProps {
+    roomName: string;
     firebaseConfig: FirebaseOptions;
     RTCConfiguration: RTCConfiguration;
 }
-export default function ReactVideoCall({ firebaseConfig, RTCConfiguration }: ReactVideoCallProps) {
+export default function ReactVideoCall({ roomName, firebaseConfig, RTCConfiguration }: ReactVideoCallProps) {
 
     const [webrtcManager, setWebRtcManager] = useState<WebRTCManager | null>();
     const [connectionStatus, setconnectionStatus] = useState<string | null>(null);
@@ -105,19 +106,11 @@ export default function ReactVideoCall({ firebaseConfig, RTCConfiguration }: Rea
                                 <button type="button"
                                     className="bg-white text-blue-600 font-medium mx-4 py-2 px-6 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
                                     onClick={() => {
-                                        if (webrtcManager) {
-                                            webrtcManager.joinOrStartRoom("Rushik1")
+                                        if (webrtcManager && roomName) {
+                                            webrtcManager.joinOrStartRoom(roomName)
                                             setconnectionStatus("waiting...")
                                         }
-                                    }}>Start</button>
-                                {/* <button type="button"
-                                    className="bg-white text-blue-600 font-medium py-2 px-6 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
-                                    onClick={() => {
-                                        if (webrtcManager) {
-                                            webrtcManager.joinRoom("Rushik1")
-                                            setconnectionStatus("joining...")
-                                        }
-                                    }}>J</button> */}
+                                    }}>Start</button>                                
                             </>
                         )
 
@@ -139,7 +132,7 @@ export default function ReactVideoCall({ firebaseConfig, RTCConfiguration }: Rea
 
 
                                 <button type="button"
-                                    className="bg-white text-blue-600 font-medium py-2 px-6 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
+                                    className="bg-white text-blue-600 font-medium py-2 px-6 rounded-full shadow-md hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300"
                                     onClick={() => {
                                         setisVolumeMute(!isVolumeMute)
                                     }}>
@@ -147,7 +140,7 @@ export default function ReactVideoCall({ firebaseConfig, RTCConfiguration }: Rea
                                 </button>
 
                                 <button type="button"
-                                    className="bg-white text-blue-600 font-medium py-2 px-6 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
+                                    className="bg-red-800 text-white font-medium py-2 px-6 rounded-full shadow-md active:bg-red-500 hover:bg-red-500 focus:bg-red-500"
                                     onClick={() => {
                                         if (webrtcManager) {
                                             webrtcManager.disconnectAll();
@@ -155,7 +148,11 @@ export default function ReactVideoCall({ firebaseConfig, RTCConfiguration }: Rea
                                             setWebRtcManager(null);
                                             setisMicMuted(false);
                                         }
-                                    }}>D</button>
+                                    }}>
+
+                                    <Icon type="hangup"></Icon>
+
+                                </button>
                             </>
                         )}
             </div>

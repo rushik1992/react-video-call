@@ -14,13 +14,13 @@ export class FirebaseWrapper{
         this._app=initializeApp(config);
         this._db=getFirestore(this._app);
     }
-    async createRoom(roomName:string){
+    async createRoom(roomName:string,ref:string){
         if(!this._roomRef){
             throw new Error("Room have not initialized!")
         } 
         this._roomName=roomName;
         this._roomRef = doc(this._db, "rooms", this._roomName);
-        await this.updateRoom("create",{createdAt:new Date(Date.now()).toISOString()});
+        await this.updateRoom("create",{createdAt:new Date(Date.now()).toISOString(),ref:ref});
 
         return true
     }

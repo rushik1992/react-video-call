@@ -3,32 +3,6 @@ import { FirebaseWrapper } from "./firebaseLib";
 import { DocumentData, Unsubscribe } from "firebase/firestore";
 import { FirebaseOptions } from "firebase/app";
 
-const configuration = {
-
-    iceServers:
-        // [
-        //     {
-        //         "username": "vjuQ952bz7IZKhG0g8fVwEQDjaxck6FfhAF3ucY2KcUZyOPV3QqMkfgzt7VtdJudAAAAAGeUq-hyYW1lc2gxOTky",
-        //         "urls": [
-        //             "stun:bn-turn2.xirsys.com",
-        //             "turn:bn-turn2.xirsys.com:80?transport=udp",
-        //             "turn:bn-turn2.xirsys.com:3478?transport=udp",
-        //             "turn:bn-turn2.xirsys.com:80?transport=tcp",
-        //             "turn:bn-turn2.xirsys.com:3478?transport=tcp",
-        //             "turns:bn-turn2.xirsys.com:443?transport=tcp",
-        //             "turns:bn-turn2.xirsys.com:5349?transport=tcp"
-        //         ],
-        //         "credential": "0c7bbc2e-dafd-11ef-bb47-0242ac140004"
-        //     }
-        // ]
-
-        [
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' },
-            { urls: 'stun:stun3.l.google.com:19302' },
-            { urls: 'stun:stun4.l.google.com:19302' },
-        ],
-};
 
 type OnUpdateStateCalBack = (state: RTCPeerConnectionState, event: Event) => void;
 
@@ -56,7 +30,7 @@ export class WebRTCManager {
         firebaseConfig: FirebaseOptions,
         localVidEle: RefObject<HTMLVideoElement>,
         remortVidEle: RefObject<HTMLVideoElement>,
-        RTCConfiguration: RTCConfiguration = configuration
+        RTCConfiguration: RTCConfiguration
     ) {
 
         this.fireBaseDb = new FirebaseWrapper(firebaseConfig);
@@ -149,43 +123,6 @@ export class WebRTCManager {
         document.addEventListener('touchend', endDrag);
     }
 
-    // async createRoom(name: string) {
-    //     // this.peerConnection.onicecandidate = async (event) => {
-    //     //     //Event that fires off when a new offer ICE candidate is created
-    //     //     if (event.candidate) {
-    //     //         await this.fireBaseDb.updateRoom("offer", JSON.stringify(this.peerConnection.localDescription));
-    //     //     }
-    //     // };
-    //     // const offer = await this.peerConnection.createOffer();
-    //     // await this.peerConnection.setLocalDescription(offer);
-    //     // await this.fireBaseDb.createRoom(name
-    //     //     , async (data: DocumentData | undefined) => {
-    //     //     if (data && data.answer && !data.completed1) {
-    //     //         this.peerConnection.setRemoteDescription(JSON.parse(data.answer));
-    //     //         await this.fireBaseDb.updateRoom("completed1", true)
-    //     //     }
-    //     // }
-    // // )
-
-    // }
-
-    // async joinRoom(name: string) {
-    //     this.peerConnection.onicecandidate = async (event) => {
-    //         //Event that fires off when a new answer ICE candidate is created
-    //         if (event.candidate) {
-    //             await this.fireBaseDb.updateRoom("answer", JSON.stringify(this.peerConnection.localDescription));
-    //         }
-    //     };
-    //     // this.roomUnSub = await this.fireBaseDb.joinRoom(name, async (data: DocumentData | undefined) => {
-    //     //     if (data && data.offer && !data.completed2) {
-    //     //         await this.peerConnection.setRemoteDescription(JSON.parse(data.offer));
-    //     //         const answer = await this.peerConnection.createAnswer();
-    //     //         await this.peerConnection.setLocalDescription(answer);
-    //     //         await this.fireBaseDb.updateRoom("completed2", true);
-    //     //     }
-    //     // });
-    // }
-
     async joinOrStartRoom(name: string) {
         this.peerConnection.onicecandidate = async (event) => {
             //Event that fires off when a new answer ICE candidate is created
@@ -194,16 +131,21 @@ export class WebRTCManager {
                 await this.fireBaseDb.updateRoom(this.roomRole==="owner"?"offer": "answer", JSON.stringify(this.peerConnection.localDescription));
             }
         };
-        this.roomUnSub = await this.fireBaseDb.joinRoom(name, async (data: DocumentData | undefined) => {
-            if (!this.roomRole && (!data || !data.offer)) {
-                console.log("OWNER CALL For Offer")
+        this.roomUnSub = await this.fireBaseDb.joinRoom(name, async (data: DocumentData | undefined) => {            
+            if (!this.roomRole && (!data || (!data.create && !data.offer))) {
+                console.debug("As Owner creating offer.")
                 this.roomRole = "owner";
                 const offer = await this.peerConnection.createOffer();
                 await this.peerConnection.setLocalDescription(offer);
-                await this.fireBaseDb.createRoom(name);
+                await this.fireBaseDb.createRoom(name,this.ref);
 
-            } else if (!this.roomRole && (data && data.offer && !data.completed2)) {
-                console.log("Joiner CALL for initialize")
+            } else if (
+                (this.roomRole === "owner" && data && data?.create && data?.create?.ref !==this.ref) ||
+                (!this.roomRole && (data && data.offer && !data.completed2))
+            ) {
+                if(this.roomRole === "owner") 
+                    console.debug("Got racecondition and moving to joiner")
+                console.debug("Joiner creating answer")
 
                 this.roomRole = "joiner";
                 await this.peerConnection.setRemoteDescription(JSON.parse(data.offer));
@@ -211,17 +153,10 @@ export class WebRTCManager {
                 await this.peerConnection.setLocalDescription(answer);
                 await this.fireBaseDb.updateRoom("completed2", true);
             } else if (this.roomRole ==="owner" && data && data.answer && !data.completed1) {
-                console.log("OWNER GOT Answer")
+                console.debug("OWNER GOT Answer",this.ref)
                 this.peerConnection.setRemoteDescription(JSON.parse(data.answer));
                 await this.fireBaseDb.updateRoom("completed1", true)
             }
-
-            // if (data && data.offer && !data.completed2) {
-            //     await this.peerConnection.setRemoteDescription(JSON.parse(data.offer));
-            //     const answer = await this.peerConnection.createAnswer();
-            //     await this.peerConnection.setLocalDescription(answer);
-            //     await this.fireBaseDb.updateRoom("completed2", true);
-            // }
         });
     }
 

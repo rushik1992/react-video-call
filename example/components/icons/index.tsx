@@ -18,7 +18,7 @@ export const Icon: FC<MyState> =
         {svgIcon && (
           <i
             style={style ?? {}}
-            className={`custIcon custIcon-${type} ${className ?? ''}`}
+            className={`select-none custIcon custIcon-${type} ${className ?? ''}`}
             title={title ?? ' '}
             {...props}
           >
