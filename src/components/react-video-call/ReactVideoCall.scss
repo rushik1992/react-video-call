@@ -12,8 +12,8 @@
         flex: 1;
         align-items: center;
         .local-video {
-            max-width: 100px;
-            max-height: 100px;
+            max-width: 150px;
+            max-height: 150px;
             height: auto;
             width: auto;
             position: absolute;
@@ -23,7 +23,7 @@
         }
         .remort-video {
             max-width: 100%;
-            max-height:100%;
+            max-height: 100%;
             height: auto;
             width: 100%;
             position: absolute;
@@ -31,7 +31,7 @@
         }
         .status {
             position: absolute;
-            top:20px;
+            top: 20px;
             left: 20px;
             background: rgba(0, 0, 0, 0.6);
             color: red;
@@ -41,15 +41,14 @@
             padding: 5px 10px;
         }
     }
-    }
-    .device-selection {
-        display: none;
-    }
-    .control-bar {
-        width: 100%;
-        height: 50px;
-        padding: 5px;
-        display: flex;
-        justify-content: space-around;
-    }
-    
+}
+.device-selection {
+    display: none;
+}
+.control-bar {
+    width: 100%;
+    height: 50px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-around;
+}
