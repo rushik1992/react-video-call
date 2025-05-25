@@ -1,7 +1,6 @@
 
-"use client";
 
-import { RefObject, useEffect, useRef, useState } from "react";
+import React,{ ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import "./ReactVideoCall.scss";
 import { Idevice, WebRTCManager } from "./libs/webrtcManager";
 import { Icon } from "../icons";
@@ -11,7 +10,8 @@ export interface ReactVideoCallProps {
     firebaseConfig: FirebaseOptions;
     RTCConfiguration: RTCConfiguration;
 }
-export default function ReactVideoCall({ roomName, firebaseConfig, RTCConfiguration }: ReactVideoCallProps) {
+
+export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:ReactVideoCallProps) => {
 
     const [webrtcManager, setWebRtcManager] = useState<WebRTCManager | null>();
     const [connectionStatus, setconnectionStatus] = useState<string | null>(null);
@@ -56,7 +56,7 @@ export default function ReactVideoCall({ roomName, firebaseConfig, RTCConfigurat
 
     return (
         <div className="rv-call-container">
-            <div className="device-selection">
+            <div className="device-selection"  style={{ display: "none" }}>
                 <select
                     id="camera-select"
                     className="block appearance-none w-full bg-black/[.05] border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

@@ -1,3 +1,30 @@
+# ReactVideoCall
+
+`ReactVideoCall` is an React Component Allow Webrtc based Video call streaming with simple Firebase based signaling.
+Very simple to integrate in react application with Desktop and Mobile view suppoer.
+
+## Installation
+
+```sh
+$ npm install react-vidoe-call
+```
+
+## Demo Link
+[Click Here](https://teli-call.web.app/)
+
+## Component Inputs
+
+|Name|Type|Description
+|---|---|---|
+|`roomName`|`String` | Pass name which need to be comman for both user who want to connect each other.
+|`firebaseConfig`|`FirebaseOptions`| Firebase config info for allow to create room and use for signaling for both user. For Security use correct Firebase rule and Auth.
+|`RTCConfiguration`|`RTCConfiguration`| WebRTC Configuration for iceServers you can use own Turn servers or Service provider like [https://xirsys.com/](https://xirsys.com/) or other
+
+
+### Code App.tsx
+
+```ts
+
 "use client";
 import React, { useState } from "react";
 import firebaseConfig from "./../../firebasecrads.json";
@@ -11,25 +38,12 @@ export default function Home() {
 
     iceServers:
       [
+        //Use TURN servers to make it work in internal network/Mobile Network
         { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'stun:stun2.l.google.com:19302' },
         { urls: 'stun:stun3.l.google.com:19302' },
         { urls: 'stun:stun4.l.google.com:19302' },
-        {
-          urls: ["stun:bn-turn2.xirsys.com"]
-        },
-        {
-          username: "MR30rcWzcXsqDI6iPIie5uENagfiKKUqustgR92-N1yOyNF2hMb4tNHRZmlYl0eSAAAAAGgpqIJyb2hhbjE5OTE=",
-          credential: "9eb931c2-33ca-11f0-8b8c-0242ac140004",
-          urls: [
-            "turn:bn-turn2.xirsys.com:80?transport=udp",
-            "turn:bn-turn2.xirsys.com:3478?transport=udp",
-            "turn:bn-turn2.xirsys.com:80?transport=tcp",
-            "turn:bn-turn2.xirsys.com:3478?transport=tcp",
-            "turns:bn-turn2.xirsys.com:443?transport=tcp",
-            "turns:bn-turn2.xirsys.com:5349?transport=tcp"
-          ]
-        }]
+      ]
   };
 
 
@@ -50,3 +64,7 @@ export default function Home() {
     </div>
   );
 }
+
+```
+
+

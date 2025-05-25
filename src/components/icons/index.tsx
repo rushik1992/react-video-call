@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import icons from './icons';
+import "../../index.css";
 import "./icons.scss";
 
 interface MyState {

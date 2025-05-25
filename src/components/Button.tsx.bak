@@ -1,0 +1,9 @@
+// import React from 'react';
+// import "../index.css";
+// export const Button: React.FC<{ label: string }> = ({ label }) => {
+//   return (
+//   <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold mx-1 py-2 px-4 rounded-lg shadow-md">
+//   Indigo Button
+// </button>
+//   )
+// };
