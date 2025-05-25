@@ -1,70 +1,103 @@
+
 # ReactVideoCall
 
-`ReactVideoCall` is an React Component Allow Webrtc based Video call streaming with simple Firebase based signaling.
-Very simple to integrate in react application with Desktop and Mobile view suppoer.
+**ReactVideoCall** is a simple yet powerful WebRTC-based video call component for React. It uses Firebase for signaling and supports both **desktop** and **mobile** views with minimal setup.
 
-## Installation
+## ✨ Features
 
-```sh
-$ npm install react-vidoe-call
+- 📞 Peer-to-peer video calling using WebRTC
+- 🔐 Firebase-based signaling (with security rules)
+- 📱 Responsive UI for mobile and desktop
+- 🔧 Easily configurable ICE/TURN servers
+- ⚡ Quick integration with just a few lines
+
+---
+
+## 📦 Installation
+
+Install via npm:
+
+```bash
+npm install react-video-call
 ```
 
-## Demo Link
-[Click Here](https://teli-call.web.app/)
+---
 
-## Component Inputs
+## 🔗 Demo
 
-|Name|Type|Description
-|---|---|---|
-|`roomName`|`String` | Pass name which need to be comman for both user who want to connect each other.
-|`firebaseConfig`|`FirebaseOptions`| Firebase config info for allow to create room and use for signaling for both user. For Security use correct Firebase rule and Auth.
-|`RTCConfiguration`|`RTCConfiguration`| WebRTC Configuration for iceServers you can use own Turn servers or Service provider like [https://xirsys.com/](https://xirsys.com/) or other
+👉 [Live Demo](https://teli-call.web.app/)
 
+---
 
-### Code App.tsx
+## 📥 Component Props
 
-```ts
+| Prop              | Type                | Description |
+|-------------------|---------------------|-------------|
+| `roomName`        | `string`            | Common room name used by both users to connect. |
+| `firebaseConfig`  | `FirebaseOptions`   | Firebase configuration object for signaling. Use secure Firebase Auth and Firestore Rules. |
+| `RTCConfiguration`| `RTCConfiguration`  | WebRTC configuration including `iceServers`. You can use your own TURN servers or services like [Xirsys](https://xirsys.com/). |
 
+---
+
+## 🚀 Example (App.tsx)
+
+```tsx
 "use client";
 import React, { useState } from "react";
 import firebaseConfig from "./../../firebasecrads.json";
 import { ReactVideoCall } from 'react-video-call';
 
 export default function Home() {
-
   const [roomName, setRoomName] = useState("");
 
   const configuration = {
-
-    iceServers:
-      [
-        //Use TURN servers to make it work in internal network/Mobile Network
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' },
-        { urls: 'stun:stun4.l.google.com:19302' },
-      ]
+    iceServers: [
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'stun:stun3.l.google.com:19302' },
+      { urls: 'stun:stun4.l.google.com:19302' },
+    ]
   };
 
-
   return (
-
-    <div className="items-center flex flex-col h-full font-[family-name:var(--font-geist-sans)]">
-      <div className="flex w-full p-1">
+    <div className="flex flex-col items-center h-full font-[family-name:var(--font-geist-sans)]">
+      <div className="w-full p-1">
         <input
           type="text"
-          onChange={(e) => { setRoomName(e?.target?.value) }}
-          placeholder={"Enter same room name both users"}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:border-gray-200"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          placeholder="Enter the same room name for both users"
+          className="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
       </div>
+
       <div className="flex-1 w-full p-4">
-        <ReactVideoCall roomName={roomName} firebaseConfig={firebaseConfig} RTCConfiguration={configuration}></ReactVideoCall>
+        <ReactVideoCall
+          roomName={roomName}
+          firebaseConfig={firebaseConfig}
+          RTCConfiguration={configuration}
+        />
       </div>
     </div>
   );
 }
-
 ```
 
+---
 
+## 🔐 Firebase Security Recommendation
+
+For production use, apply proper Firebase Authentication and Firestore Rules to restrict access and ensure user privacy.
+
+---
+
+## 🧠 Notes
+
+- Both users must enter the **same room name** to establish a connection.
+- Ensure TURN servers are properly configured if behind firewalls or NAT (especially on mobile networks).
+
+---
+
+## 📄 License
+
+MIT © [Your Name or Org]
