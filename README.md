@@ -100,4 +100,4 @@ For production use, apply proper Firebase Authentication and Firestore Rules to 
 
 ## 📄 License
 
-MIT © [Your Name or Org]
+ISC
