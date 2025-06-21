@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import firebaseConfig from "./../../firebasecrads.json";
-import { ReactVideoCall } from 'react-video-call';
+// import { ReactVideoCall } from 'react-video-call';
+import { ReactVideoCall } from '../../../src/components/index';
 
 export default function Home() {
 
@@ -15,28 +16,25 @@ export default function Home() {
         { urls: 'stun:stun2.l.google.com:19302' },
         { urls: 'stun:stun3.l.google.com:19302' },
         { urls: 'stun:stun4.l.google.com:19302' },
+        // {
+        //   urls: ["stun:bn-turn2.xirsys.com"]
+        // }, 
         {
-          urls: ["stun:bn-turn2.xirsys.com"]
-        },
-        {
-          username: "MR30rcWzcXsqDI6iPIie5uENagfiKKUqustgR92-N1yOyNF2hMb4tNHRZmlYl0eSAAAAAGgpqIJyb2hhbjE5OTE=",
-          credential: "9eb931c2-33ca-11f0-8b8c-0242ac140004",
+          username: "174818007989396294",
+          credential: "oFL3QftEAny9YWlvqnb06A41MP0=",
           urls: [
-            "turn:bn-turn2.xirsys.com:80?transport=udp",
-            "turn:bn-turn2.xirsys.com:3478?transport=udp",
-            "turn:bn-turn2.xirsys.com:80?transport=tcp",
-            "turn:bn-turn2.xirsys.com:3478?transport=tcp",
-            "turns:bn-turn2.xirsys.com:443?transport=tcp",
-            "turns:bn-turn2.xirsys.com:5349?transport=tcp"
+            "turn:relay1.expressturn.com:3480"
           ]
         }]
   };
 
+  useEffect(() => {
+  }, []);
 
   return (
-
+    <>
     <div className="items-center flex flex-col h-full font-[family-name:var(--font-geist-sans)]">
-      <div className="flex w-full p-1">
+      <div className="flex w-full">
         <input
           type="text"
           onChange={(e) => { setRoomName(e?.target?.value) }}
@@ -44,9 +42,10 @@ export default function Home() {
           className="w-full px-4 py-2 bg-gray-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:border-gray-200"
         />
       </div>
-      <div className="flex-1 w-full p-4">
+      <div className="flex-1 w-full p-2">
         <ReactVideoCall roomName={roomName} firebaseConfig={firebaseConfig} RTCConfiguration={configuration}></ReactVideoCall>
       </div>
     </div>
+    </>
   );
 }
