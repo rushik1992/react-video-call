@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import firebaseConfig from "./../../firebasecrads.json";
-// import { ReactVideoCall } from 'react-video-call';
-import { ReactVideoCall } from '../../../src/components/index';
+import { ReactVideoCall } from 'react-video-call';
+// import { ReactVideoCall } from '../../../src/components/index';
 
 export default function Home() {
 

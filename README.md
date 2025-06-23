@@ -10,6 +10,7 @@
 - 📱 Responsive UI for mobile and desktop
 - 🔧 Easily configurable ICE/TURN servers
 - ⚡ Quick integration with just a few lines
+- 📷 Option to select/Switch Camera
 
 ---
 

@@ -22,6 +22,7 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }: R
     const [isMicMuted, setisMicMuted] = useState<boolean>(false);
     const [isVolumeMute, setisVolumeMute] = useState<boolean>(true);
     const [isLocalView, setisLocalView] = useState<boolean>(false);
+    const [isComponentLoaded, setisComponentLoaded] = useState<boolean>(false);
     const localVidRef = useRef<HTMLVideoElement>(null);
     const remortVidRef = useRef<HTMLVideoElement>(null);
 
@@ -44,6 +45,13 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }: R
     }
 
     useEffect(() => {
+        if (isComponentLoaded) {
+            return;
+        }
+        setisComponentLoaded(true);
+    }, []);
+
+    useEffect(() => {
         if (!webrtcManager && remortVidRef && localVidRef) {
             initRTCConnection();
         }
@@ -56,7 +64,7 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }: R
     }, [selectedCamera, selectedAudio, webrtcManager]);
 
     return (
-        <div className="rv-call-container">
+        isComponentLoaded && (<div className="rv-call-container">
             <div className="device-selection">
                 <div className="camera-select-wrapper">
                     <select
@@ -166,7 +174,7 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }: R
                             </>
                         )}
             </div>
-        </div>
+        </div>)
     )
 
 };
