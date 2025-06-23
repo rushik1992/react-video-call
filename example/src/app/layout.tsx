@@ -25,6 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="theme-color" content="#000000"/>
+        <meta name="description" content="A simple React video call component using WebRTC and Firebase." />
+        <meta name="keywords" content="react, video call, webRTC, firebase, component" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>

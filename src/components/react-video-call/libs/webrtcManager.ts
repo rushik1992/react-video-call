@@ -48,79 +48,79 @@ export class WebRTCManager {
             }
         }
         const videoElement = localVidEle.current;
-        let isDragging = false;
-        let offsetX: number, offsetY: number;
+        // let isDragging = false;
+        // let offsetX: number, offsetY: number;
 
-        // Handle start of dragging (both mouse and touch)
-        function startDrag(e: TouchEvent | MouseEvent) {
-            isDragging = true;
+        // // Handle start of dragging (both mouse and touch)
+        // function startDrag(e: TouchEvent | MouseEvent) {
+        //     isDragging = true;
 
-            let clientX: number;
-            let clientY: number;
-            if (e instanceof TouchEvent) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
+        //     let clientX: number;
+        //     let clientY: number;
+        //     if (e instanceof TouchEvent) {
+        //         clientX = e.touches[0].clientX;
+        //         clientY = e.touches[0].clientY;
+        //     } else {
+        //         clientX = e.clientX;
+        //         clientY = e.clientY;
+        //     }
 
 
-            offsetX = clientX - videoElement.offsetLeft;
-            offsetY = clientY - videoElement.offsetTop;
+        //     offsetX = clientX - videoElement.offsetLeft;
+        //     offsetY = clientY - videoElement.offsetTop;
 
-            videoElement.style.cursor = 'grabbing';
-        }
+        //     videoElement.style.cursor = 'grabbing';
+        // }
 
-        // Handle dragging (both mouse and touch)
-        function drag(e: TouchEvent | MouseEvent) {
-            if (!isDragging) return;
+        // // Handle dragging (both mouse and touch)
+        // function drag(e: TouchEvent | MouseEvent) {
+        //     if (!isDragging) return;
 
-            let clientX: number;
-            let clientY: number;
+        //     let clientX: number;
+        //     let clientY: number;
 
-            if (e instanceof TouchEvent) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
+        //     if (e instanceof TouchEvent) {
+        //         clientX = e.touches[0].clientX;
+        //         clientY = e.touches[0].clientY;
+        //     } else {
+        //         clientX = e.clientX;
+        //         clientY = e.clientY;
+        //     }
 
-            // Calculate the new position
-            let newX = clientX - offsetX;
-            let newY = clientY - offsetY;
+        //     // Calculate the new position
+        //     let newX = clientX - offsetX;
+        //     let newY = clientY - offsetY;
 
-            // Keep the video within the container boundaries
-            if (!videoElement.parentElement) return;
-            const rect = videoElement.parentElement.getBoundingClientRect();
-            const videoRect = videoElement.getBoundingClientRect();
+        //     // Keep the video within the container boundaries
+        //     if (!videoElement.parentElement) return;
+        //     const rect = videoElement.parentElement.getBoundingClientRect();
+        //     const videoRect = videoElement.getBoundingClientRect();
 
-            if (newX < 0) newX = 0;
-            if (newY < 0) newY = 0;
-            if (newX + videoRect.width > rect.width) newX = rect.width - videoRect.width;
-            if (newY + videoRect.height > rect.height) newY = rect.height - videoRect.height;
+        //     if (newX < 0) newX = 0;
+        //     if (newY < 0) newY = 0;
+        //     if (newX + videoRect.width > rect.width) newX = rect.width - videoRect.width;
+        //     if (newY + videoRect.height > rect.height) newY = rect.height - videoRect.height;
 
-            // Update the position
-            videoElement.style.left = `${newX}px`;
-            videoElement.style.top = `${newY}px`;
-        }
+        //     // Update the position
+        //     videoElement.style.left = `${newX}px`;
+        //     videoElement.style.top = `${newY}px`;
+        // }
 
-        // Handle end of dragging (both mouse and touch)
-        function endDrag() {
-            isDragging = false;
-            videoElement.style.cursor = 'grab';
-        }
+        // // Handle end of dragging (both mouse and touch)
+        // function endDrag() {
+        //     isDragging = false;
+        //     videoElement.style.cursor = 'grab';
+        // }
 
-        // Mouse events
-        videoElement.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', endDrag);
+        // // Mouse events
+        // videoElement.addEventListener('mousedown', startDrag);
+        // document.addEventListener('mousemove', drag);
+        // document.addEventListener('mouseup', endDrag);
 
-        // Touch events
-        videoElement.addEventListener('touchstart', startDrag);
-        document.addEventListener('touchmove', drag);
-        document.addEventListener('touchend', endDrag);
+        // // Touch events
+        // videoElement.addEventListener('touchstart', startDrag);
+        // document.addEventListener('touchmove', drag);
+        // document.addEventListener('touchend', endDrag);
     }
 
     async joinOrStartRoom(name: string) {
@@ -230,8 +230,18 @@ export class WebRTCManager {
                 if (this.localStream) {
                     this.localStream.getTracks().forEach((track) => {
                         if (this.localStream) {
-                            console.debug("added local track")
-                            this.peerConnection.addTrack(track, this.localStream);
+                            this.peerConnection.getSenders
+                            var sender = this.peerConnection.getSenders().find(function (s) {
+                                return s?.track?.kind && s?.track?.kind === track?.kind;
+                            });
+                            if(sender){
+                                console.debug("Replace track");
+                                sender.replaceTrack(track);
+                            }
+                            else{
+                                console.debug("Add new track");
+                                this.peerConnection.addTrack(track, this.localStream);
+                            }
 
                         }
                     });

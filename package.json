@@ -1,6 +1,6 @@
 {
   "name": "react-video-call",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "ReactVideoCall is a simple yet powerful WebRTC-based video call component for React. It uses Firebase for signaling and supports both desktop and mobile views with minimal setup.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

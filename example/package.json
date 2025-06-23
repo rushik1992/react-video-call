@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.1.0",
+  "version": "0.0.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ngrok": ".\node_modules\ngrok\bin\ngrok http http://localhost:3000"
+    "ngrok": ".\node_modules\ngrok\bin\ngrok http http://localhost:3000",
+    "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
     "firebase": "^11.1.0",
