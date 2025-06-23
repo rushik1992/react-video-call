@@ -1,7 +1,7 @@
 {
   "name": "react-video-call",
-  "version": "0.0.2",
-  "description": "Webrtc based Video calling using Firebase Database for signaling",
+  "version": "0.0.4",
+  "description": "ReactVideoCall is a simple yet powerful WebRTC-based video call component for React. It uses Firebase for signaling and supports both desktop and mobile views with minimal setup.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "type": "module",
@@ -36,5 +36,34 @@
     "tailwindcss": "^3.4.17",
     "tslib": "^2.8.1",
     "typescript": "^5.7.2"
-  }
+  },
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rushik1992/react-video-call.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rushik1992/react-video-call/issues"
+  },
+  "homepage": "https://github.com/rushik1992/react-video-call",
+  "keywords": [
+    "react",
+    "video-call",
+    "webrtc",
+    "react-webrtc",
+    "video-chat",
+    "firebase",
+    "peer-to-peer",
+    "p2p",
+    "react-component",
+    "rtc",
+    "turn-server",
+    "stun",
+    "firebase-signaling",
+    "web-video-call",
+    "real-time",
+    "react-video",
+    "mobile-video-call",
+    "desktop-video-call"
+  ]
 }

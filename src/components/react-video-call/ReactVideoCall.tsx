@@ -1,6 +1,6 @@
 
 
-import React,{ ReactNode, RefObject, useEffect, useRef, useState } from "react";
+import React, { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import "./ReactVideoCall.scss";
 import { Idevice, WebRTCManager } from "./libs/webrtcManager";
 import { Icon } from "../icons";
@@ -11,7 +11,7 @@ export interface ReactVideoCallProps {
     RTCConfiguration: RTCConfiguration;
 }
 
-export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:ReactVideoCallProps) => {
+export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }: ReactVideoCallProps) => {
 
     const [webrtcManager, setWebRtcManager] = useState<WebRTCManager | null>();
     const [connectionStatus, setconnectionStatus] = useState<string | null>(null);
@@ -21,6 +21,8 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
     const [audioDevices, setaudioDevices] = useState<Idevice[]>([]);
     const [isMicMuted, setisMicMuted] = useState<boolean>(false);
     const [isVolumeMute, setisVolumeMute] = useState<boolean>(true);
+    const [isLocalView, setisLocalView] = useState<boolean>(false);
+    const [isComponentLoaded, setisComponentLoaded] = useState<boolean>(false);
     const localVidRef = useRef<HTMLVideoElement>(null);
     const remortVidRef = useRef<HTMLVideoElement>(null);
 
@@ -43,6 +45,13 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
     }
 
     useEffect(() => {
+        if (isComponentLoaded) {
+            return;
+        }
+        setisComponentLoaded(true);
+    }, []);
+
+    useEffect(() => {
         if (!webrtcManager && remortVidRef && localVidRef) {
             initRTCConnection();
         }
@@ -55,26 +64,35 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
     }, [selectedCamera, selectedAudio, webrtcManager]);
 
     return (
-        <div className="rv-call-container">
-            <div className="device-selection"  style={{ display: "none" }}>
-                <select
-                    id="camera-select"
-                    className="block appearance-none w-full bg-black/[.05] border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={selectedCamera} onChange={(e) => {
-                        setSelectedCamera(e.target.value);
-                    }}
-                    suppressHydrationWarning={true}
-                >
+        isComponentLoaded && (<div className="rv-call-container">
+            <div className="device-selection">
+                <div className="camera-select-wrapper">
+                    <select
+                        id="camera-select"
+                        className="camera-select block"
+                        value={selectedCamera} onChange={(e) => {
+                            setSelectedCamera(e.target.value);
+                        }}
+                        suppressHydrationWarning={true}
+                    >
 
-                    <option>Select Camera</option>
-                    {
-                        videoDevices.map((m) => (
-                            <option value={m.value} key={m.value}>{m.label}</option>
-                        ))
-                    }
-                </select>
+                        <option>Select Camera</option>
+                        {
+                            videoDevices.map((m) => (
+                                <option value={m.value} key={m.value}>{m.label}</option>
+                            ))
+                        }
+                    </select>
+                    <svg className="camera-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 7h4l2-2h6l2 2h4v13H3V7z" />
+                        <circle cx="12" cy="13" r="3" />
+                    </svg>
+                </div>
+
 
                 <select
+                    style={{ display: "none" }}
                     id="audio-select"
                     className=" bg-black/[.05] block appearance-none w-full border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={selectedAudio} onChange={(e) => {
@@ -92,8 +110,8 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
             </div>
             <div className="rv-video-container">
                 {connectionStatus && <span className="status">{connectionStatus}</span>}
-                <video className="local-video" ref={localVidRef} autoPlay playsInline muted={true} />
-                <video className="remort-video" ref={remortVidRef} autoPlay playsInline muted={isVolumeMute} />
+                <video className={!isLocalView ? "small-video" : "big-video"} ref={localVidRef} autoPlay playsInline muted={true} onClick={() => { setisLocalView(true) }} />
+                <video className={isLocalView ? "small-video" : "big-video"} ref={remortVidRef} autoPlay playsInline muted={isVolumeMute} onClick={() => { setisLocalView(false) }} />
 
 
             </div>
@@ -110,7 +128,7 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
                                             webrtcManager.joinOrStartRoom(roomName)
                                             setconnectionStatus("waiting...")
                                         }
-                                    }}>Start</button>                                
+                                    }}>Start</button>
                             </>
                         )
 
@@ -118,7 +136,7 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
                             <>
 
                                 <button type="button"
-                                    className="bg-white text-blue-600 font-medium py-2 px-6 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
+                                    className="bg-white text-blue-600 font-small py-1 px-4 rounded-full shadow-md hover:bg-gray-100 focus:bg-gray-100"
                                     onClick={() => {
                                         if (webrtcManager) {
                                             webrtcManager.muteMic(!isMicMuted);
@@ -132,7 +150,7 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
 
 
                                 <button type="button"
-                                    className="bg-white text-blue-600 font-medium py-2 px-6 rounded-full shadow-md hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300"
+                                    className="bg-white text-blue-600 font-small py-1 px-4 rounded-full shadow-md hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300"
                                     onClick={() => {
                                         setisVolumeMute(!isVolumeMute)
                                     }}>
@@ -156,7 +174,7 @@ export const ReactVideoCall = ({ roomName, firebaseConfig, RTCConfiguration }:Re
                             </>
                         )}
             </div>
-        </div>
+        </div>)
     )
 
 };
